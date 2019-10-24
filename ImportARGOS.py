@@ -12,6 +12,7 @@
 
 # Import modules
 import sys, os, arcpy
+arcpy.env.overwriteOutput = True
 
 # Set input variables (Hard-wired)
 inputFile = '../Data/ARGOSData/1997dg.txt'
@@ -21,7 +22,12 @@ outputSR = arcpy.SpatialReference(54002)
 ## Prepare a new feature class to which we'll add tracking points
 # Create an empty feature class; requires the path and name as separate parameters
 outPath,outName = os.path.split(outputFC)
-arcpy.CreateFeatureclass_management(outPath, outName) # part of management toolbox
+arcpy.CreateFeatureclass_management(outPath, outName, "POINT",'','','',outputSR) # part of management toolbox
+
+# Add TagID, LC, IQ, and Date fields to the output feature class
+arcpy.AddField_management(outputFC,"TagID","LONG")
+arcpy.AddField_management(outputFC,"LC","TEXT")
+arcpy.AddField_management(outputFC,"Date","DATE")
 
 ## Construct a while loop to iterate through all lines in the datafile
 # Open the ARGOS data file for reading
