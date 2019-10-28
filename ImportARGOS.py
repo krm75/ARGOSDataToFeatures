@@ -62,6 +62,11 @@ while lineString:
         # Print results to see how we're doing
         print (tagID,obsDate,obsTime,obsLC,"Lat:"+obsLat,"Long:"+obsLon)
         
+        # Construct a point object from the feature class
+        obsPoint = arcpy.Point()
+        obsPoint.X = obsLon
+        obsPoint.Y = obsLat
+        
     # Move to the next line so the while loop progresses
     lineString = inputFileObj.readline()
     
