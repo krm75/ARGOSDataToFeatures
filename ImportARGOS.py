@@ -6,8 +6,8 @@
 ##
 ## Usage: ImportArgos <ARGOS folder> <Output feature class> 
 ##
-## Created: Fall 2019
-## Author: Kimberly.R.Myers@duke.edu (for ENV859)
+## Created: Fall 2018
+## Author: John.Fay@duke.edu (for ENV859)
 ##---------------------------------------------------------------------
 
 # Import modules
@@ -22,7 +22,7 @@ outputSR = arcpy.SpatialReference(54002)
 ## Prepare a new feature class to which we'll add tracking points
 # Create an empty feature class; requires the path and name as separate parameters
 outPath,outName = os.path.split(outputFC)
-arcpy.CreateFeatureclass_management(outPath, outName, "POINT",'','','',outputSR) # part of management toolbox
+arcpy.CreateFeatureclass_management(outPath,outName,"POINT","","","",outputSR)
 
 # Add TagID, LC, IQ, and Date fields to the output feature class
 arcpy.AddField_management(outputFC,"TagID","LONG")
@@ -61,8 +61,11 @@ while lineString:
         # Extract the date we need to variables
         obsLat = line2Data[2]
         obsLon= line2Data[5]
-        
-           #Try to convert the coordinates to numbers
+
+        # Print results to see how we're doing
+        #print (tagID,obsDate,obsTime,obsLC,"Lat:"+obsLat,"Long:"+obsLon)
+
+        #Try to convert the coordinates to numbers
         try:
 
             # Convert raw coordinate strings to numbers
@@ -74,26 +77,23 @@ while lineString:
                 obsLon = float(obsLon[:-1])
             else:
                 obsLon = float(obsLon[:-1] * -1)
-        
-        # Print results to see how we're doing
-        #print (tagID,obsDate,obsTime,obsLC,"Lat:"+obsLat,"Long:"+obsLon)
-        
-        # Construct a point object from the feature class
-        obsPoint = arcpy.Point()
-        obsPoint.X = obsLon
-        obsPoint.Y = obsLat
-        
-        # Convert the point to a point geometry object with spatial reference
+               
+            # Construct a point object from the feature class
+            obsPoint = arcpy.Point()
+            obsPoint.X = obsLon
+            obsPoint.Y = obsLat
+            
+            # Convert the point to a point geometry object with spatial reference
             inputSR = arcpy.SpatialReference(4326)
             obsPointGeom = arcpy.PointGeometry(obsPoint,inputSR)
-            
+
         #Handle any error
         except Exception as e:
             print("Error adding record {} to the output".format(tagID))
 
         # Create a feature object
         cur.insertRow((obsPointGeom,tagID,obsLC,obsDate.replace(".","/") + " " + obsTime))
-            
+
     # Move to the next line so the while loop progresses
     lineString = inputFileObj.readline()
     
